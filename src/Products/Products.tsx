@@ -1,12 +1,15 @@
+import { ProductFiltersProvider } from "../Filters/reducers/productFiltersReducer"
 import { ProductGallery } from "./ProductGallery"
 import { Searchbar } from "./Searchbar"
 
 export const Products = () => {
     return (
         <section className="products">
-            <Searchbar />
-            <hr />
-            <ProductGallery />
+            <ProductFiltersProvider>
+                <Searchbar />
+                <hr />
+                <ProductGallery />
+            </ProductFiltersProvider>
         </section>
     )
 }

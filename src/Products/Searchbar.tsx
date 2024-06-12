@@ -1,16 +1,17 @@
-import { useState } from "react"
 import { useTotalProducts } from "./hooks/useTotalProducts"
+import { useProductFitlers } from "../Filters/reducers/productFiltersReducer"
 
 export const Searchbar = () => {
-    const { totalProducts } = useTotalProducts()
-    const [search, setSearch] = useState('')
+    const { state, dispatch } = useProductFitlers()
+    const { totalProducts } = useTotalProducts(state.search)
+
     return (
         <input
             type="text"
             className="searchbar"
             placeholder={`Search among ${totalProducts} products`}
-            value={search}
-            onChange={event => { setSearch(event.target.value) }}
+            value={state.search}
+            onChange={event => { dispatch({type: 'search', searchTerm: event.target.value}) }}
         />
     )
 }
