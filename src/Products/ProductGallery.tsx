@@ -5,10 +5,13 @@ import { useProducts } from "./hooks/useProducts"
 export const ProductGallery = () => {
     const {products, isLoading} = useProducts();
 
-    return <div className="product_gallery">
-        {isLoading && <Loader/>}
-        {
-            products.map(product => <Product key={product.id} productData={product} />)
+    return (<>
+        {!isLoading && (<h3>Total {products.length}</h3>)}
+        <div className="product_gallery">
+            {isLoading && <Loader />}
+            {
+                !isLoading && products.map(product => <Product key={product.id} productData={product} />)
         }
     </div>
+    </>)
 }

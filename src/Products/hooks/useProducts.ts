@@ -26,7 +26,27 @@ export function getProducts(
     brands: string[] = [],
     categories: string[] = []
 ): Product[] {
-    return allProducts;
+    let filteredProducts = allProducts;
+
+    const regex = new RegExp(search, 'i');
+
+    filteredProducts = allProducts.filter(product => {
+        const titleMatched = search !== '' 
+            ? product.title.match(regex) !== null
+            : true;
+
+        const brandMatched = brands.length !== 0
+            ? brands.includes(product.brand)
+            : true;
+        
+        const categoryMatched = categories.length !== 0
+            ? categories.includes(product.category)
+            : true;
+
+        return titleMatched && brandMatched && categoryMatched;
+    })
+
+    return filteredProducts;
 }
 
 export const allProducts: Product[] = [
