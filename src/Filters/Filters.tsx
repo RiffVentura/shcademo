@@ -1,27 +1,46 @@
-import { useState } from "react";
-import { useCategories } from "./hooks/useCategories";
+import { useDispatch } from "react-redux";
+import { useFiltersSelector } from "../redux/store";
 import { useBrands } from "./hooks/useBrands";
+import { useCategories } from "./hooks/useCategories";
 
 export const Filters = () => {
-    const {categories} = useCategories();
-    const {brands} = useBrands();
-    const [selectedCategories, setSelectedCategories] = useState<Option[]>([]);
-    const [selectedBrands, setSelectedBrands] = useState<Option[]>([]);
+    const { categories } = useCategories();
+    const { brands } = useBrands();
+    const {
+        categories: selectedCategories,
+        brands: selectedBrands,
+    } = useFiltersSelector();
+    const dispatch = useDispatch();
+
+    const categoriesAsOptions = selectedCategories.map(category => ({ id: category, name: category }))
+    const brandsAsOptions = selectedBrands.map(brand => ({ id: brand, name: brand }))
 
     return (
         <section className="filters">
             <h3>Filters</h3>
-            <hr/>
+            <hr />
             <Filter
                 title='Category'
                 options={categories}
-                selectedValues={selectedCategories}
-                onChange={setSelectedCategories} />
+                selectedValues={categoriesAsOptions}
+                onChange={(category, selected) => {
+                    if (selected) {
+                        dispatch({ type: 'addCategory', category })
+                    } else {
+                        dispatch({ type: 'removeCategory', category })
+                    }
+                }} />
             <Filter
                 title='Brand'
                 options={brands}
-                selectedValues={selectedBrands}
-                onChange={setSelectedBrands} />
+                selectedValues={brandsAsOptions}
+                onChange={(brand, selected) => {
+                    if (selected) {
+                        dispatch({ type: 'addBrand', brand })
+                    } else {
+                        dispatch({ type: 'removeBrand', brand })
+                    }
+                }} />
         </section>
     );
 }
@@ -35,19 +54,10 @@ type FilterProps = {
     title: string,
     options: Option[],
     selectedValues: Option[],
-    onChange: (newValues: Option[]) => void,
+    onChange: (id: string, selected: boolean) => void,
 }
 
 const Filter = ({ title, options, selectedValues, onChange }: FilterProps) => {
-    const handleToggle = (option: Option, selected: boolean) => {
-        if (!selected) {
-            return onChange(selectedValues.filter(selected => selected.id !== option.id))
-        }
-        if (selected) {
-            return onChange([...selectedValues, option])
-        }
-    }
-
     return (
         <div className="filter">
             <div className="filter_title">{title}</div>
@@ -57,7 +67,7 @@ const Filter = ({ title, options, selectedValues, onChange }: FilterProps) => {
                     return (
                         <li key={option.id} className="filter_option">
                             <button
-                                onClick={() => { handleToggle(option, !selected) }}
+                                onClick={() => { onChange(option.id, !selected) }}
                                 className={selected ? 'selected' : ''}
                             >{option.name}
                             </button>
